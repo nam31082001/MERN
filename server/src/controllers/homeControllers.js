@@ -18,15 +18,18 @@ class homeController {
             .catch(err => { res.status(500).json({ error: err }) });
     }
     put(rep, res) {
-        List.findByIdAndUpdate(rep.params.id,
-            { $set: { name: req.body }},
-            { new: true },
-            (err, record) => {
-                if (err) return res.status(500).send(err);
-                return res.send(record);
-            }
-        );
-        
+        const itemFix = rep.body;
+        const { id } = rep.params
+        List.findByIdAndUpdate(id, itemFix, { new: true })
+            .then(updatedItem => {
+                if (!updatedItem) {
+                    return res.status(404).send('Item not found');
+                }
+                res.send(updatedItem);
+            })
+            .catch(error => {
+                res.status(500).send(error.message);
+            });
     }
 }
 module.exports = new homeController();
